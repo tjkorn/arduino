@@ -69,6 +69,7 @@ void setup() {
   lcd.write((uint8_t)0);            // to print the custom character, 'write' the location
   lcd.println(" Love You");
     lcd.print("       Ma");
+    lcd.print("..Pa  ");
   
   delay(1000);
 }
