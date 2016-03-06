@@ -156,6 +156,7 @@ String toString(float f, int prec)
 /**************************************************************************/
 uint32_t loopIteration = 0;
 char buf[16] = "";
+float temperature;
 void loop(void)
 {
   sensors_event_t accel_event;
@@ -220,10 +221,7 @@ void loop(void)
     //lcd.print(" ");
     //lcd.println(orientation.heading);
     //lcd.println(F(""));
-    String headline = String("ROLL PITCH HEAD");
-    String line1 = toString(orientation.roll,0) + " " + toString(orientation.pitch,0) + "  " + toString(orientation.heading,0);
-    lcd.println(headline);
-    lcd.print(line1);
+
   }
 
   /* Previous code removed handling accel and mag data separately */
@@ -252,8 +250,7 @@ void loop(void)
   bmp.getEvent(&bmp_event);
   if (bmp_event.pressure)
   {
-    /* Get ambient temperature in C */
-    float temperature;
+    /* Get ambient temperature in C */    
     bmp.getTemperature(&temperature);
     /* Convert atmospheric pressure, SLP and temp to altitude */
     Serial.print(F("Alt: "));
@@ -265,6 +262,21 @@ void loop(void)
     Serial.print(F("Temp: "));
     Serial.print(temperature*9/5+32);
     Serial.println(F(""));
+  }
+
+  if(isLedOn)
+  {
+    String headline = String("ROLL PITCH HEAD");
+    String line1 = toString(orientation.roll,0) + " " + toString(orientation.pitch,0) + "  " + toString(orientation.heading,0);
+    lcd.println(headline);
+    lcd.print(line1);
+  }
+  else
+  {
+    String headline = String("TEMP");
+    String line1 =  toString(temperature,1) + " C/" + toString(temperature*9/5+32,1) + " F";
+    lcd.println(headline);
+    lcd.print(line1);
   }
   
   delay(100);
