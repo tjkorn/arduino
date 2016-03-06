@@ -6,6 +6,23 @@
 #include <Adafruit_10DOF.h>
 #include "Arduino.h"
 
+#define BUTTON_DOWN_LEVEL LOW
+#define BUTTON_UP_LEVEL   HIGH
+#define LED_ON_LEVEL      LOW
+#define LED_OFF_LEVEL     HIGH
+
+// set pin numbers:
+const int buttonPin = 5;     // the number of the pushbutton pin
+const int ledPin =  13;      // the number of the LED pin
+
+// variables will change:
+int buttonState = 0;         // variable for reading the pushbutton status
+
+bool isLedOn = false;
+bool isButtonDown = false;
+
+
+
 //setup lcd
 #if defined(ARDUINO_ARCH_SAMD) || defined(__SAM3X8E__)
   // use pin 18 with Due, pin 1 with Zero or M0 Pro 
@@ -102,7 +119,14 @@ void initLcd(void)
   lcdClear();
   lcdGoHome();
 }
-void setup() {
+void setup() 
+{
+
+ // initialize the LED pin as an output:
+  pinMode(ledPin, OUTPUT);
+  // initialize the pushbutton pin as an input:
+  pinMode(buttonPin, INPUT);
+ 
   // put your setup code here, to run once:
   Serial.begin(115200);
   Serial.println(F("Adafruit 10 DOF Pitch/Roll/Heading Example")); Serial.println("");
@@ -134,12 +158,38 @@ uint32_t loopIteration = 0;
 char buf[16] = "";
 void loop(void)
 {
-  
   sensors_event_t accel_event;
   sensors_event_t mag_event;
   sensors_event_t bmp_event;
   sensors_vec_t   orientation;
 
+  // read the state of the pushbutton value:
+  buttonState = digitalRead(buttonPin);
+
+  // check if the pushbutton is pressed.
+  // if it is, the buttonState is LOW:
+
+  if(isButtonDown)
+  {    
+    if(buttonState == BUTTON_UP_LEVEL)
+    {
+      isButtonDown = false;
+    }
+  }
+  else if (buttonState == BUTTON_DOWN_LEVEL) 
+  {
+    // turn LED on:
+    isButtonDown = true;
+    isLedOn = !isLedOn;
+    if(isLedOn)
+    {
+      digitalWrite(ledPin, LED_ON_LEVEL);
+    }
+    else
+    {
+      digitalWrite(ledPin, LED_OFF_LEVEL);
+      }
+  }
   lcdClear();
   lcdGoHome();
   //lcd.print("n=");
@@ -217,5 +267,5 @@ void loop(void)
     Serial.println(F(""));
   }
   
-  delay(500);
+  delay(100);
 }
